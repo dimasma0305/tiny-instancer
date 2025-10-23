@@ -3,14 +3,14 @@ name: 'barcade'
 timeout: 900
 containers:
   - name: 'app'
-    image: 'barcade:latest'
+    image: 'osu-ctf-challenges/barcade:latest'
     limits:
       memory: '256Mi'
       cpu: '1.0'
     security:
       read_only_fs: false
   - name: 'nginx'
-    image: 'barcade-nginx:latest'
+    image: 'osu-ctf-challenges/barcade-nginx:latest'
     security:
       read_only_fs: false
       cap_add:
@@ -27,7 +27,7 @@ name: 'admin-panel'
 timeout: 900
 containers:
   - name: 'app'
-    image: 'admin-panel:latest'
+    image: 'osu-ctf-challenges/admin-panel:latest'
     security:
       read_only_fs: false
       cap_add:
