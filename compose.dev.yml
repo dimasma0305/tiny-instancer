@@ -1,0 +1,27 @@
+services:
+  traefik:
+    image: traefik:v3.5.3
+    restart: unless-stopped
+    container_name: ti-traefik
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./conf/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./conf/tls.yml:/etc/traefik/dynamic/tls.yml:ro
+      - ./conf/middlewares.yml:/etc/traefik/dynamic/middlewares.yml:ro
+      - ./certs/:/certs/:ro
+  cache:
+    image: bitnami/redis:latest
+    restart: unless-stopped
+    container_name: ti-cache
+    env_file:
+      - .env
+    volumes:
+      - ./.data/redis:/data
+    command: /opt/bitnami/scripts/redis/run.sh --maxmemory 0
+    ports:
+      - "6379:6379"

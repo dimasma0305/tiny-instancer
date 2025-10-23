@@ -1,0 +1,39 @@
+---
+name: 'barcade'
+timeout: 900
+containers:
+  - name: 'app'
+    image: 'barcade:latest'
+    limits:
+      memory: '256Mi'
+      cpu: '1.0'
+    security:
+      read_only_fs: false
+  - name: 'nginx'
+    image: 'barcade-nginx:latest'
+    security:
+      read_only_fs: false
+      cap_add:
+        - CAP_CHOWN
+        - CAP_FOWNER
+        - CAP_SETGID
+        - CAP_SETUID
+expose:
+  - kind: 'https'
+    container_name: 'nginx'
+    container_port: 1337
+---
+name: 'admin-panel'
+timeout: 900
+containers:
+  - name: 'app'
+    image: 'admin-panel:latest'
+    security:
+      read_only_fs: false
+      cap_add:
+        - CAP_SETGID
+        - CAP_SETUID
+expose:
+  - kind: 'https'
+    container_name: 'app'
+    container_port: 80

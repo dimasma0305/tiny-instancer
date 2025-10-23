@@ -1,0 +1,7 @@
+.venv*/
+.data/
+worker-*.lock
+.env
+*.pyc
+**/__pycache__/**
+.idea/
