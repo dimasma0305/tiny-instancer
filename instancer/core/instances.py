@@ -498,6 +498,10 @@ async def instance_prunner() -> None:
     docker = get_docker()
     while True:
         now = timestamp()
-        await _prune_instances(docker, now)
-        await _prune_networks(docker, now)
+        logger.info('Running instance prunner')
+        try:
+            await _prune_instances(docker, now)
+            await _prune_networks(docker, now)
+        except Exception as e:
+            logger.opt(exception=e).error('Encountered an error while prunning')
         await sleep(config.PRUNNER_INTERVAL_SECONDS)
