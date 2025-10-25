@@ -51,3 +51,33 @@ expose:
   - kind: 'https'
     container_name: 'app'
     container_port: 3000
+---
+name: 'modulation-master'
+timeout: 900
+containers:
+  - name: 'app'
+    image: 'osu-ctf-challenges/modulation-master:latest'
+    security:
+      read_only_fs: false
+      cap_drop: []
+    env:
+      FLAG: "osu{I_h0p3_y0u_d1dn't_u53_LLM_2_s0Lv3_7H1S}"
+expose:
+  - kind: 'https'
+    container_name: 'app'
+    container_port: 8000
+---
+name: 'human-benchmark'
+timeout: 900
+containers:
+  - name: 'app'
+    image: 'osu-ctf-challenges/human-benchmark:latest'
+    security:
+      read_only_fs: false
+      cap_drop: []
+    env:
+      FLAG: "osu{youre_literally_ch3ating}"
+expose:
+  - kind: 'https'
+    container_name: 'app'
+    container_port: 3000
