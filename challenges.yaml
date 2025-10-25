@@ -46,6 +46,7 @@ containers:
     egress: true
     security:
       read_only_fs: false
+      security_opt: []
 expose:
   - kind: 'https'
     container_name: 'app'
