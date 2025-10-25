@@ -37,3 +37,13 @@ expose:
   - kind: 'https'
     container_name: 'app'
     container_port: 80
+---
+name: 'chart-viewer'
+timeout: 900
+containers:
+  - name: 'app'
+    image: 'osu-ctf-challenges/chart-viewer:latest'
+expose:
+  - kind: 'https'
+    container_name: 'app'
+    container_port: 3000
