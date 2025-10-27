@@ -211,13 +211,12 @@ After these changes, make sure to restart the docker.
 ## App configuration, and other deployment stuff
 
 The only thing you really need to do is issue certs for `*.instancer.domain,instancer.domain`, place them in the certs 
-folder (`fullchain.pem` and `privkey.pem`), then fill out the `.env` file in the same file as `.env.example`.
+folder (`fullchain.pem` and `privkey.pem`), then fill out the `.env` file in the same way as `.env.example`.
 
 After that, configure the challenges in `challenges.yaml` and just do `docker compose up --build -d`.
 
 You will then need to add DNS records for `*.instancer.domain` and `instancer.domain` to point at the machine where
-you're hosting the application. Make sure to not use cloudflare proxy because unless you're paying them for specific 
-edge certs.
+you're hosting the application. Make sure to not use cloudflare proxy unless you're paying them for specific edge certs.
 
 ## Acknowledgments
 
