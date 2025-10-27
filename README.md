@@ -42,7 +42,6 @@ containers:
     image: 'osu-ctf-challenges/barcade-nginx:latest'
     security:
       read_only_fs: false
-      # cap_drop:
       cap_add:
         - CAP_CHOWN
         - CAP_FOWNER
