@@ -1,6 +1,6 @@
 import http
 
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -20,7 +20,9 @@ async def get_frontend_root() -> dict[str, str]:
 @router.get('/auth')
 async def get_frontend_auth(request: Request, state: str, token: str | None = None) -> HTMLResponse:
     if not config.AUTH_PLATFORM_URL:
-        raise HTTPException(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR.value, detail='Auth platform url is not set')
+        raise HTTPException(
+            status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR.value, detail='Auth platform url is not set'
+        )
 
     challenge_item = get_challenge(state)
     return templates.TemplateResponse(
@@ -30,7 +32,7 @@ async def get_frontend_auth(request: Request, state: str, token: str | None = No
             'challenge': challenge_item,
             'token': token,
             'auth_platform_url': config.AUTH_PLATFORM_URL,
-        }
+        },
     )
 
 

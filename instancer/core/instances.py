@@ -502,6 +502,6 @@ async def instance_prunner() -> None:
         try:
             await _prune_instances(docker, now)
             await _prune_networks(docker, now)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.opt(exception=e).error('Encountered an error while prunning')
         await sleep(config.PRUNNER_INTERVAL_SECONDS)

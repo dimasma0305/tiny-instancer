@@ -46,7 +46,7 @@ containers:
     egress: true
     security:
       read_only_fs: false
-      security_opt: []
+      security_opt: []  # allow privilege escalation
 expose:
   - kind: 'https'
     container_name: 'app'
@@ -57,9 +57,6 @@ timeout: 900
 containers:
   - name: 'app'
     image: 'osu-ctf-challenges/modulation-master:latest'
-    security:
-      read_only_fs: false
-      cap_drop: []
     env:
       FLAG: "osu{I_h0p3_y0u_d1dn't_u53_LLM_2_s0Lv3_7H1S}"
 expose:
@@ -72,9 +69,6 @@ timeout: 900
 containers:
   - name: 'app'
     image: 'osu-ctf-challenges/human-benchmark:latest'
-    security:
-      read_only_fs: false
-      cap_drop: []
     env:
       FLAG: "osu{youre_literally_ch3ating}"
 expose:
