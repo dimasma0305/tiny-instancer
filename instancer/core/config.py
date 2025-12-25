@@ -10,6 +10,7 @@ from instancer.util.fs import ROOT_DIR
 class AuthProvider(StrEnum):
     LOCAL = 'local'
     RCTF = 'rctf'
+    CTFD = 'ctfd'
 
 
 class Settings(BaseSettings):
@@ -32,14 +33,13 @@ class Settings(BaseSettings):
     CHALLENGES_YAML_PATH: str = str(ROOT_DIR / 'challenges.yaml')
     TEMPLATES_PATH: str = str(ROOT_DIR / 'templates')
 
-    TRAEFIK_CONTAINER_NAME: str = 'ti-traefik'
+    TRAEFIK_CONTAINER_NAME: str = 'traefik'
     TRAEFIK_HTTP_ENTRYPOINT: str = 'web'
     TRAEFIK_HTTP_PORT: int = 80
     TRAEFIK_HTTPS_ENTRYPOINT: str = 'websecure'
     TRAEFIK_HTTPS_PORT: int = 443
-    TRAEFIK_TCP_ENTRYPOINT: str = 'tcp'
-    TRAEFIK_TCP_PORT: int = 1337
-    TRAEFIK_PERMANENT_REDIRECT_MIDDLEWARE_NAME: str = 'permanent-https-redirect@file'
+    TRAEFIK_TCP_ENTRYPOINT: str = 'websecure'
+    TRAEFIK_TCP_PORT: int = 443
 
     DOCKER_MANAGER_NAME: str = 'tiny-instancer'
     PREFIX: str = 'ti'

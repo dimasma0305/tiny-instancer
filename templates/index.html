@@ -1,56 +1,158 @@
 <!-- dm me (@es3n1n) if you want to make a proper frontend for this thing -->
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{challenge.name}} instancer</title>
-  <style>
-    body {
-      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin: 2rem;
+  <title>{{challenge.name}} // instancer</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            zinc: {
+              950: '#09090b',
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            glow: {
+              '0%': { boxShadow: '0 0 10px rgba(34, 197, 94, 0.1)' },
+              '100%': { boxShadow: '0 0 20px rgba(34, 197, 94, 0.4)' },
+            }
+          }
+        }
+      }
     }
-    h1 { margin: 0 0 0.5rem; }
-    #status, #time-left { margin: 0.25rem 0; }
-    #endpoints[hidden] { display: none; }
-    ul { padding-left: 1.1rem; }
-    button { padding: 0.5rem 0.8rem; }
-    #error { color: #b00020; margin-top: 0.5rem; }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass {
+        @apply bg-zinc-900/40 backdrop-blur-md border border-white/5 shadow-2xl;
+      }
+      .text-glow {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      .btn-gradient {
+        @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:bg-gradient-to-br disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none;
+      }
+      .btn-destructive {
+        @apply bg-transparent border border-rose-500/50 text-rose-500 hover:bg-rose-500/10 hover:shadow-[0_0_15px_rgba(244,63,94,0.3)] transition-all duration-300;
+      }
+    }
+    
+    body {
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(34, 197, 94, 0.03) 0%, transparent 50%);
+    }
   </style>
 </head>
-<body>
-  <h1>{{challenge.name}} instancer</h1>
-  <p id="status">Status: loading…</p>
-  <p id="time-left"></p>
-  <p id="error" role="alert"></p>
 
-  <section id="endpoints" hidden>
-    <p>Endpoints:</p>
-    <ul id="endpoints-list"></ul>
-  </section>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex items-center justify-center p-4 selection:bg-cyan-500/30">
 
-  <button id="submit" disabled>Start instance</button>
+  <div class="w-full max-w-lg relative group">
+    <!-- Background Glow Effect -->
+    <div
+      class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition duration-1000">
+    </div>
+
+    <div class="relative glass rounded-xl p-8 overflow-hidden">
+      <!-- Decorative Top Line -->
+      <div
+        class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent opacity-50">
+      </div>
+
+      <!-- Header -->
+      <header class="flex items-center justify-between mb-8">
+        <h1 class="text-xl font-bold tracking-tight flex items-center gap-3">
+          <span id="status-dot"
+            class="w-2.5 h-2.5 rounded-full bg-zinc-700 shadow-[0_0_10px_rgba(0,0,0,0.5)] transition-colors duration-500"></span>
+          <span
+            class="bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400 font-mono tracking-tighter">{{challenge.name}}</span>
+        </h1>
+        <div class="text-[0.65rem] font-bold tracking-widest text-zinc-600 uppercase">INSTANCER // v2.0</div>
+      </header>
+
+      <!-- Status Display -->
+      <div class="grid grid-cols-2 gap-6 mb-8">
+        <div class="flex flex-col gap-1">
+          <span class="text-[0.7rem] uppercase tracking-wider font-bold text-zinc-500">System Status</span>
+          <span id="status" class="font-mono text-sm text-cyan-400 font-medium">INITIALIZING...</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="text-[0.7rem] uppercase tracking-wider font-bold text-zinc-500">T-Minus</span>
+          <span id="time-left" class="font-mono text-sm text-zinc-400 tabular-nums">--:--</span>
+        </div>
+      </div>
+
+      <!-- Endpoints Section -->
+      <div id="endpoints" class="hidden mb-8 space-y-3">
+        <div class="flex items-center gap-2 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-cyan-500">
+            <path fill-rule="evenodd"
+              d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+              clip-rule="evenodd" />
+          </svg>
+          <span class="text-[0.7rem] uppercase tracking-wider font-bold text-cyan-500/80">Access Points</span>
+        </div>
+        <ul id="endpoints-list" class="space-y-2"></ul>
+      </div>
+
+      <!-- Action Area -->
+      <div class="relative z-10">
+        <button id="submit" disabled
+          class="w-full py-3 px-4 rounded-lg text-sm tracking-wide uppercase font-bold btn-gradient disabled:opacity-50 disabled:grayscale transition-all transform active:scale-95">
+          Initialize System
+        </button>
+        <div id="error"
+          class="h-6 mt-3 text-center text-xs font-mono text-rose-400/90 font-medium opacity-0 transition-opacity duration-300"
+          role="alert"></div>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center">
+      <a href="#"
+        class="text-[0.6rem] text-zinc-700 hover:text-zinc-500 transition-colors tracking-widest uppercase">Privacy •
+        Terms • Support</a>
+    </div>
+  </div>
 
   {% if hcaptcha_site_key %}
-  <div style="display:none">
-    <div id="hcaptcha"
-         class="h-captcha"
-         data-sitekey="{{ hcaptcha_site_key }}"
-         data-size="invisible"
-         data-callback="onCaptchaSuccess"
-         data-error-callback="onCaptchaError"
-         data-expired-callback="onCaptchaExpired"></div>
+  <div class="hidden">
+    <div id="hcaptcha" class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}" data-size="invisible"
+      data-callback="onCaptchaSuccess" data-error-callback="onCaptchaError" data-expired-callback="onCaptchaExpired">
+    </div>
   </div>
   <script src="https://hcaptcha.com/1/api.js" async defer></script>
   {% endif %}
-
-  <noscript>JavaScript is required.</noscript>
 
   <script>
     const API = '/v1/instances/{{challenge.name}}';
     const AUTH_URL = '/auth?state={{challenge.name}}';
 
     const els = {
+      statusDot: document.getElementById('status-dot'),
       status: document.getElementById('status'),
       time: document.getElementById('time-left'),
       endpointsSection: document.getElementById('endpoints'),
@@ -59,34 +161,38 @@
       error: document.getElementById('error'),
     };
 
-    const captchaEnabled = {% if hcaptcha_site_key %}true{% else %}false{% endif %};
+    const captchaEnabled = {% if hcaptcha_site_key %}true{% else %} false{% endif %};
     let pendingMethod = null;
-
     let lastStatus = 'unknown';
     let updating = false;
     let remaining = 0;
     let total = 0;
 
-    const redirectToAuth = () => {
-      window.location.replace(AUTH_URL);
-    };
-
-    if (!localStorage.token) {
-      redirectToAuth();
-    }
+    const redirectToAuth = () => window.location.replace(AUTH_URL);
+    if (!localStorage.token) redirectToAuth();
 
     const showError = (msg) => {
       els.error.textContent = msg || '';
+      els.error.style.opacity = msg ? '1' : '0';
     };
-    const clearError = () => {
-        showError('');
+    const clearError = () => showError('');
+
+    const formatTime = (seconds) => {
+      if (seconds <= 0) return '00:00';
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
     };
 
     const renderTime = () => {
       if (lastStatus !== 'stopped') {
-        els.time.textContent = `Time left: ${Math.max(0, remaining)} / ${total} seconds`;
+        els.time.textContent = `${formatTime(remaining)} / ${formatTime(total)}`;
+        els.time.classList.add('text-zinc-200');
+        els.time.classList.remove('text-zinc-600');
       } else {
-        els.time.textContent = '';
+        els.time.textContent = '--:--';
+        els.time.classList.add('text-zinc-600');
+        els.time.classList.remove('text-zinc-200');
       }
     };
 
@@ -102,32 +208,85 @@
       return `tcp://${ep.host}:${ep.port}`;
     };
 
+    const copyToClipboard = async (text, btn) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 text-emerald-500"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>`;
+        setTimeout(() => {
+          btn.innerHTML = originalContent;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    };
+
     const renderEndpoints = (endpoints) => {
       els.endpointsList.innerHTML = '';
-
       endpoints.forEach((ep) => {
         const url = formatEndpoint(ep);
+        const li = document.createElement('li');
+        li.className = 'group flex flex-col gap-2 p-3 rounded-lg bg-zinc-950/50 border border-zinc-800/50 hover:border-cyan-500/30 transition-colors';
+
+        // Main URL display
+        const topRow = document.createElement('div');
+        topRow.className = 'flex items-center justify-between w-full';
+
         const a = document.createElement('a');
         a.href = url;
+        a.className = 'font-mono text-xs text-zinc-300 group-hover:text-cyan-400 transition-colors truncate';
         a.textContent = url;
-          if (ep.kind === 'http' || ep.kind === 'https') {
+
+        if (ep.kind === 'http' || ep.kind === 'https') {
           a.target = '_blank';
           a.rel = 'noopener noreferrer';
         }
 
-        const li = document.createElement('li');
-        li.appendChild(a);
+        topRow.appendChild(a);
+        li.appendChild(topRow);
+
+        // Copy Options
+        const actionsRow = document.createElement('div');
+        actionsRow.className = 'flex items-center gap-2 mt-1';
+
+        // Copy as HTTPS
+        const httpsUrl = `https://${ep.host}:${ep.port}`;
+        const btnHttps = document.createElement('button');
+        btnHttps.className = 'flex items-center gap-1.5 px-2 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[10px] font-mono text-zinc-400 hover:text-cyan-400 transition-colors cursor-pointer';
+        btnHttps.innerHTML = `<span>HTTPS</span>`;
+        btnHttps.onclick = () => copyToClipboard(httpsUrl, btnHttps);
+
+        // Copy as ncat
+        const ncatCmd = `ncat --ssl ${ep.host} ${ep.port}`;
+        const btnNcat = document.createElement('button');
+        btnNcat.className = 'flex items-center gap-1.5 px-2 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[10px] font-mono text-zinc-400 hover:text-cyan-400 transition-colors cursor-pointer';
+        btnNcat.innerHTML = `<span>NCAT</span>`;
+        btnNcat.onclick = () => copyToClipboard(ncatCmd, btnNcat);
+
+        actionsRow.appendChild(btnHttps);
+        actionsRow.appendChild(btnNcat);
+        li.appendChild(actionsRow);
+
         els.endpointsList.appendChild(li);
       });
     };
 
+    const updateUIState = (status) => {
+      if (status === 'running') {
+        els.statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] animate-pulse';
+        els.status.className = 'font-mono text-sm text-emerald-400 font-bold tracking-wide text-glow';
+      } else if (status === 'stopped') {
+        els.statusDot.className = 'w-2.5 h-2.5 rounded-full bg-zinc-600';
+        els.status.className = 'font-mono text-sm text-zinc-500 font-medium';
+      } else {
+        els.statusDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse';
+        els.status.className = 'font-mono text-sm text-amber-400 font-medium';
+      }
+    };
+
     const updateStatus = async () => {
-      if (updating) {
-          return;
-      }
-      if (!localStorage.token) {
-          return redirectToAuth();
-      }
+      if (updating) return;
+      if (!localStorage.token) return redirectToAuth();
 
       updating = true;
       try {
@@ -140,16 +299,18 @@
 
         const data = await resp.json().catch(() => ({}));
         if (!resp.ok) {
-          els.status.textContent = 'Status: error';
+          els.status.textContent = 'SYSTEM ERROR';
+          els.status.className = 'font-mono text-sm text-rose-500 font-bold';
+          els.statusDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.6)]';
           showError(data?.detail || 'Failed to load status.');
           els.button.disabled = true;
           return;
         }
 
         clearError();
-
         lastStatus = data.status;
-        els.status.textContent = `Status: ${data.status}`;
+        updateUIState(lastStatus);
+        els.status.textContent = data.status.toUpperCase();
         els.button.disabled = false;
 
         if (data.status !== 'stopped') {
@@ -157,23 +318,25 @@
           total = Number(data.timeout ?? 0);
           renderTime();
 
-          els.button.textContent = 'Stop instance';
-          renderEndpoints(data.endpoints || []);
-          els.endpointsSection.hidden = false;
+          els.button.textContent = 'Terminate System';
+          els.button.className = 'w-full py-3 px-4 rounded-lg text-sm tracking-wide uppercase font-bold btn-destructive transition-all transform active:scale-95';
+          if (data.endpoints) {
+            renderEndpoints(data.endpoints);
+            els.endpointsSection.classList.remove('hidden');
+          }
         } else {
           remaining = 0;
           total = Number(data.timeout ?? 0);
           renderTime();
 
-          els.button.textContent = 'Start instance';
-          els.endpointsSection.hidden = true;
+          els.button.textContent = 'Initialize System';
+          els.button.className = 'w-full py-3 px-4 rounded-lg text-sm tracking-wide uppercase font-bold btn-gradient transition-all transform active:scale-95 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)]';
+          els.endpointsSection.classList.add('hidden');
           els.endpointsList.innerHTML = '';
         }
       } catch (e) {
         console.error(e);
-        els.status.textContent = 'Status: error';
-        els.button.disabled = true;
-
+        els.status.textContent = 'NETWORK FAILURE';
         showError('Network error while loading status.');
       } finally {
         updating = false;
@@ -181,11 +344,10 @@
     };
 
     async function sendAction(method, captchaToken = undefined) {
-      if (!localStorage.token) {
-          return redirectToAuth();
-      }
+      if (!localStorage.token) return redirectToAuth();
 
       try {
+        els.button.disabled = true;
         const resp = await fetch(API, {
           method,
           headers: {
@@ -196,68 +358,48 @@
         });
 
         if (resp.status === 401) return redirectToAuth();
-
         const data = await resp.json().catch(() => ({}));
+
         if (!resp.ok) {
-          showError(data?.detail || 'Request failed.');
+          if (resp.status !== 400 && resp.status !== 422) {
+            showError(data?.detail || 'Request failed.');
+          } else {
+            showError(Array.isArray(data.detail) ? data.detail[0].msg : data.detail);
+          }
           return;
         }
-
         clearError();
       } catch (e) {
         console.error(e);
         showError('Network error while sending request.');
       } finally {
-        if (captchaEnabled && window.hcaptcha) {
-          hcaptcha.reset();
-        }
-
+        if (captchaEnabled && window.hcaptcha) hcaptcha.reset();
         await updateStatus();
-        els.button.disabled = false;
         pendingMethod = null;
       }
     }
 
-    window.onCaptchaSuccess = function(token) {
-      if (!pendingMethod) return;
-      sendAction(pendingMethod, token);
-    };
-    window.onCaptchaError = function() {
-      els.button.disabled = false;
-      showError('Captcha error. Please try again.');
-      pendingMethod = null;
-    };
-    window.onCaptchaExpired = function() {
-      els.button.disabled = false;
-      showError('Captcha expired. Please try again.');
-      pendingMethod = null;
-    };
+    window.onCaptchaSuccess = function (token) { if (pendingMethod) sendAction(pendingMethod, token); };
+    window.onCaptchaError = function () { els.button.disabled = false; showError('Captcha error.'); pendingMethod = null; };
+    window.onCaptchaExpired = function () { els.button.disabled = false; showError('Captcha expired.'); pendingMethod = null; };
 
     els.button.addEventListener('click', async () => {
       if (lastStatus === 'unknown') return;
       if (!localStorage.token) return redirectToAuth();
-
-      els.button.disabled = true;
       clearError();
 
       const method = lastStatus === 'stopped' ? 'PUT' : 'DELETE';
-
       if (captchaEnabled) {
         pendingMethod = method;
-        if (window.hcaptcha && hcaptcha.execute) {
-          hcaptcha.execute();
-        } else {
-          setTimeout(() => window.hcaptcha && hcaptcha.execute && hcaptcha.execute(), 200);
-        }
+        if (window.hcaptcha && hcaptcha.execute) hcaptcha.execute();
+        else setTimeout(() => window.hcaptcha && hcaptcha.execute && hcaptcha.execute(), 200);
         return;
       }
-
       sendAction(method);
     });
 
     updateStatus();
-    setInterval(updateStatus, 5000);
-
+    setInterval(updateStatus, 3000);
     setInterval(() => {
       if (lastStatus !== 'stopped' && remaining > 0) {
         remaining -= 1;
@@ -266,4 +408,5 @@
     }, 1000);
   </script>
 </body>
+
 </html>

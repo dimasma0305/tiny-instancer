@@ -5,6 +5,7 @@ from fastapi import Depends
 from instancer.auth_providers.abc import AuthProviderABC, InnerAuthSession
 from instancer.auth_providers.local import LocalAuthProvider
 from instancer.auth_providers.rctf import RCTFAuthProvider
+from instancer.auth_providers.ctfd import CTFdAuthProvider
 from instancer.core.config import AuthProvider, config
 
 
@@ -13,6 +14,8 @@ def get_auth_provider() -> AuthProviderABC:
         return LocalAuthProvider(config.AUTH_PROVIDER_ARGS)
     if config.AUTH_PROVIDER == AuthProvider.RCTF:
         return RCTFAuthProvider(config.AUTH_PROVIDER_ARGS)
+    if config.AUTH_PROVIDER == AuthProvider.CTFD:
+        return CTFdAuthProvider(config.AUTH_PROVIDER_ARGS)
 
     msg = f'Unsupported AUTH_PROVIDER: {config.AUTH_PROVIDER}'
     raise ValueError(msg)

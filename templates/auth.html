@@ -1,24 +1,45 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{challenge.name}} auth</title>
-</head>
-<body>
+    <title>{{challenge.name}} // auth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <script>
-        (function () {
-            const challengeName = {{ challenge.name|tojson }};
-            {% if token %}
-                localStorage.token = {{ token|tojson }};
-                window.location = '/challenges/' + encodeURIComponent(challengeName);
-            {% else %}
-                const authBase = {{ auth_platform_url|tojson }};
-                const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
-                const state = encodeURIComponent(challengeName);
-                window.location = authBase.replace(/\/$/, '') + '/auth?redirect_uri=' + redirectUri + '&state=' + state;
-            {% endif %}
-        })();
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { mono: ['JetBrains Mono', 'monospace'] },
+                    colors: { zinc: { 950: '#09090b', 900: '#18181b' } }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-zinc-950 text-zinc-500 font-mono text-sm h-screen flex flex-col items-center justify-center gap-4">
+    <div class="animate-pulse flex items-center gap-3">
+        <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+        <span>AUTHENTICATING :: {{challenge.name}}</span>
+    </div>
+
+    <script>
+            (function () {
+                const challengeName = {{ challenge.name| tojson
+            }};
+        {% if token %}
+        localStorage.token = {{ token | tojson }};
+        window.location = '/challenges/' + encodeURIComponent(challengeName);
+        {% else %}
+        const authBase = {{ auth_platform_url| tojson }};
+        const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
+        const state = encodeURIComponent(challengeName);
+        window.location = authBase.replace(/\/$/, '') + '/auth?redirect_uri=' + redirectUri + '&state=' + state;
+        {% endif %}
+        }) ();
     </script>
 </body>
+
 </html>

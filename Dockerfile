@@ -2,7 +2,20 @@ FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     git \
+    curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI
+RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.4.0.tgz -o docker.tgz \
+    && tar xzvf docker.tgz --strip 1 -C /usr/local/bin docker/docker \
+    && rm docker.tgz \
+    && chmod +x /usr/local/bin/docker
+
+# Install Docker Compose
+RUN mkdir -p /usr/local/lib/docker/cli-plugins \
+    && curl -fsSL https://github.com/docker/compose/releases/download/v2.32.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 WORKDIR /app
 

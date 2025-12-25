@@ -6,9 +6,11 @@ from uvicorn import run as uvicorn_run
 from instancer.core.config import config
 from instancer.core.prunner import prunner_process
 from instancer.util.logger import logger
+from instancer.builder import build_all_challenges
 
 
 def main() -> None:
+    build_all_challenges()
     Process(target=prunner_process, daemon=True).start()
 
     logger.info(f'Starting instancer at {config.BIND_HOST}:{config.BIND_PORT}')

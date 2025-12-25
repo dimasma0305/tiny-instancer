@@ -1,0 +1,3 @@
+dashboard:
+  config: "src/docker-compose.yml"
+  timeout: 900
