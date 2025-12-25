@@ -85,6 +85,18 @@ def parse_compose(compose_path: Path, category: str, challenge_name: str) -> Tup
         
         if 'cap_add' in service_config:
              container['security']['cap_add'] = service_config['cap_add']
+
+        if 'environment' in service_config:
+            env = service_config['environment']
+            if isinstance(env, list):
+                env_dict = {}
+                for item in env:
+                    if '=' in item:
+                        k, v = item.split('=', 1)
+                        env_dict[k] = v
+                container['env'] = env_dict
+            elif isinstance(env, dict):
+                container['env'] = {k: str(v) for k, v in env.items()}
         
         containers.append(container)
         
