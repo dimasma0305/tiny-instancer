@@ -132,9 +132,6 @@ def _add_expose_labels(
     team_id: str,
     instance_id: str,
 ) -> None:
-    # All endpoints share the same hostname, so no need to check for container name here
-    has_http_expose = any(e.kind == ExposeKind.HTTP for e in challenge.expose)
-
     for i, expose in enumerate(challenge.expose):
         if expose.container_name != container.name:
             continue
@@ -161,14 +158,6 @@ def _add_expose_labels(
                 labels[f'traefik.http.routers.{router_name}.tls'] = 'true'
                 labels[f'traefik.http.routers.{router_name}.service'] = router_name
                 labels[f'traefik.http.services.{router_name}.loadbalancer.server.port'] = str(expose.container_port)
-
-                if not has_http_expose:
-                    redirect_router_name = f'{router_name}-redirect'
-                    labels[f'traefik.http.routers.{redirect_router_name}.rule'] = f'Host(`{host}`)'
-                    labels[f'traefik.http.routers.{redirect_router_name}.entrypoints'] = config.TRAEFIK_HTTP_ENTRYPOINT
-                    labels[f'traefik.http.routers.{redirect_router_name}.middlewares'] = (
-                        config.TRAEFIK_PERMANENT_REDIRECT_MIDDLEWARE_NAME
-                    )
 
 
 def _get_endpoints(challenge: Challenge, host: str | None) -> list[Instance.Endpoint] | None:

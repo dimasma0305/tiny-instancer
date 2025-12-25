@@ -44,7 +44,20 @@ def parse_compose(compose_path: Path, category: str, challenge_name: str) -> Tup
     for service_name, service_config in services.items():
         container = {
             'name': service_name,
-            'security': {}
+            'security': {
+                'read_only_fs': False,
+                'cap_add': [
+                    'CAP_CHOWN',
+                    'CAP_FOWNER',
+                    'CAP_SETGID',
+                    'CAP_SETUID'
+                ]
+            },
+            'limits': {
+                'memory': '256Mi',
+                'cpu': '1'
+            },
+            'egress': True,
         }
 
         if 'image' in service_config:
@@ -104,7 +117,10 @@ def get_exposed_ports(compose_path: Path) -> List[Dict[str, Any]]:
             else:
                 continue
 
-            kind = 'tcp'
+            if container_port in (80, 8000, 3000):
+                kind = 'https'
+            else:
+                kind = 'tcp'
        
             exposed.append({
                 'kind': kind,
