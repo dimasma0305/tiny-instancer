@@ -1,4 +1,5 @@
 import os
+import re
 import yaml
 import subprocess
 from pathlib import Path
@@ -202,7 +203,15 @@ def process_challenge(challenge_path: Path, category: str, name: str) -> Optiona
         'expose': expose
     }
 def _sanitize_name(name: str) -> str:
-    return re.sub(r'[a-z0-9-]+', '-', name)
+    """
+    Sanitize the name to ensure it contains only lowercase alphanumeric characters and hyphens.
+    """
+    # Convert to lowercase
+    name = name.lower()
+    # Replace invalid characters with hyphens
+    name = re.sub(r'[^a-z0-9-]+', '-', name)
+    # Strip leading/trailing hyphens
+    return name.strip('-')
 
 def build_all_challenges() -> None:
     """
@@ -225,9 +234,8 @@ def build_all_challenges() -> None:
     for c_yaml in challenge_files:
         challenge_dir = c_yaml.parent
         try:
-             category_name = challenge_dir.parent.name
-             challenge_name = challenge_dir.name
-             challenge_name = _sanitize_name(challenge_name)
+             category_name = _sanitize_name(challenge_dir.parent.name)
+             challenge_name = _sanitize_name(challenge_dir.name)
 
              data = process_challenge(c_yaml, category_name, challenge_name)
              if data:
