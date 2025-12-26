@@ -201,7 +201,8 @@ def process_challenge(challenge_path: Path, category: str, name: str) -> Optiona
         'containers': containers,
         'expose': expose
     }
-
+def _sanitize_name(name: str) -> str:
+    return re.sub(r'[^a-z0-9-]', '-', name)
 
 def build_all_challenges() -> None:
     """
@@ -226,7 +227,8 @@ def build_all_challenges() -> None:
         try:
              category_name = challenge_dir.parent.name
              challenge_name = challenge_dir.name
-             
+             challenge_name = _sanitize_name(challenge_name)
+
              data = process_challenge(c_yaml, category_name, challenge_name)
              if data:
                  challenges_list.append(data)
