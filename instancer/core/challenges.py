@@ -171,12 +171,39 @@ class Challenge(BaseModel):
 
 def load_challenges() -> dict[str, Challenge]:
     result: dict[str, Challenge] = {}
+    path = Path(config.CHALLENGES_YAML_PATH)
 
-    for item in yaml.safe_load_all(Path(config.CHALLENGES_YAML_PATH).read_bytes()):
-        challenge = TypeAdapter(Challenge).validate_python(item)
-        result[challenge.name] = challenge
+    files_to_read = []
+    if path.is_file():
+        files_to_read.append(path)
+    elif path.is_dir():
+        # Search recursively for challenge config files
+        files_to_read.extend(path.rglob('challenge.yml'))
+        files_to_read.extend(path.rglob('challenge.yaml'))
+    
+    # Deduplicate
+    files_to_read = list(set(files_to_read))
+    
+    if not files_to_read:
+        logger.warning(f"No challenge configuration files found in {path}")
 
-    logger.info(f'Loaded {len(result)} challenges.')
+    for file_path in files_to_read:
+        logger.info(f"Loading challenges from {file_path}")
+        try:
+            content = file_path.read_bytes()
+            for item in yaml.safe_load_all(content):
+                if item:
+                    try:
+                        challenge = TypeAdapter(Challenge).validate_python(item)
+                        result[challenge.name] = challenge
+                        logger.info(f"Loaded challenge '{challenge.name}' from {file_path}")
+                    except Exception as ve:
+                        # Log validation error but keep going for other docs
+                        logger.error(f"Validation error in {file_path}: {ve}")
+        except Exception as e:
+            logger.error(f"Error reading {file_path}: {e}")
+
+    logger.info(f'Loaded {len(result)} challenges from {len(files_to_read)} files.')
     return result
 
 
