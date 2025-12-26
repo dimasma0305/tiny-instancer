@@ -219,7 +219,7 @@ def build_all_challenges() -> None:
     """
     from instancer.util.fs import ROOT_DIR
     
-    challenges_dir = Path(config.CHALLENGES_DIR)
+    challenges_dir = Path(config.CHALLENGES_PATH)
 
     challenges_list = []
     
