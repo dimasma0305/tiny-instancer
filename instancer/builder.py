@@ -216,22 +216,26 @@ def build_all_challenges() -> None:
 
     challenges_list = []
     
-    for category_dir in challenges_dir.iterdir():
-        if not category_dir.is_dir():
-            continue
-            
-        for challenge_dir in category_dir.iterdir():
-            if not challenge_dir.is_dir():
-                continue
-                
-            c_yaml = challenge_dir / 'challenge.yml'
-            if not c_yaml.exists():
-                c_yaml = challenge_dir / 'challenge.yaml'
-            
-            if c_yaml.exists():
-                data = process_challenge(c_yaml, category_dir.name, challenge_dir.name)
-                if data:
-                    challenges_list.append(data)
+    # Updated to search recursively for challenge.yml/yaml files
+    challenge_files = list(challenges_dir.rglob('challenge.yml')) + list(challenges_dir.rglob('challenge.yaml'))
+    # Deduplicate
+    challenge_files = list(set(challenge_files))
+    
+    for c_yaml in challenge_files:
+        challenge_dir = c_yaml.parent
+        # Assuming category is the parent of the challenge directory
+        # e.g., .../category/challenge/challenge.yml
+        # If the structure is deeper, this heuristic might need adjustment,
+        # but for now we take the parent of the challenge folder as category.
+        try:
+             category_name = challenge_dir.parent.name
+             challenge_name = challenge_dir.name
+             
+             data = process_challenge(c_yaml, category_name, challenge_name)
+             if data:
+                 challenges_list.append(data)
+        except Exception as e:
+             logger.error(f"Error processing {c_yaml}: {e}")
 
     output_path = config.CHALLENGES_YAML_PATH
     if not Path(output_path).is_absolute():
