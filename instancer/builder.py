@@ -223,10 +223,6 @@ def build_all_challenges() -> None:
     
     for c_yaml in challenge_files:
         challenge_dir = c_yaml.parent
-        # Assuming category is the parent of the challenge directory
-        # e.g., .../category/challenge/challenge.yml
-        # If the structure is deeper, this heuristic might need adjustment,
-        # but for now we take the parent of the challenge folder as category.
         try:
              category_name = challenge_dir.parent.name
              challenge_name = challenge_dir.name
@@ -240,6 +236,9 @@ def build_all_challenges() -> None:
     output_path = config.CHALLENGES_YAML_PATH
     if not Path(output_path).is_absolute():
         output_path = ROOT_DIR / output_path
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(output_path).touch(exist_ok=True)
         
     logger.info(f"Writing {len(challenges_list)} challenges to {output_path}")
     
