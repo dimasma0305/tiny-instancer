@@ -237,7 +237,6 @@ def build_all_challenges() -> None:
     if not Path(output_path).is_absolute():
         output_path = ROOT_DIR / output_path
 
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     Path(output_path).touch(exist_ok=True)
         
     logger.info(f"Writing {len(challenges_list)} challenges to {output_path}")
