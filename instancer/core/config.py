@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     AUTH_PROVIDER_ARGS: dict[str, str] = {}
 
     CHALLENGES_YAML_PATH: str = str(ROOT_DIR / 'challenges.yaml')
+    CHALLENGES_PATH: str = str(ROOT_DIR / 'challenges')
     TEMPLATES_PATH: str = str(ROOT_DIR / 'templates')
 
     TRAEFIK_CONTAINER_NAME: str = 'traefik'
@@ -78,7 +79,7 @@ class Settings(BaseSettings):
 
         return v.rstrip('/')
 
-    @field_validator('CHALLENGES_YAML_PATH', 'TEMPLATES_PATH')
+    @field_validator('CHALLENGES_YAML_PATH', 'TEMPLATES_PATH', 'CHALLENGES_PATH')
     @classmethod
     def validate_challenges_yaml_path(cls, v: str) -> str:
         path = Path(v)
