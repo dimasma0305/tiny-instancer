@@ -243,11 +243,11 @@ def build_all_challenges() -> None:
         except Exception as e:
              logger.error(f"Error processing {c_yaml}: {e}")
 
-    output_path = config.CHALLENGES_YAML_PATH
-    if not Path(output_path).is_absolute():
+    output_path = Path(config.CHALLENGES_YAML_PATH)
+    output_path.touch(exist_ok=True)
+    if not output_path.is_absolute():
         output_path = ROOT_DIR / output_path
 
-    Path(output_path).touch(exist_ok=True)
         
     logger.info(f"Writing {len(challenges_list)} challenges to {output_path}")
     
