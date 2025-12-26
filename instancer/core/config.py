@@ -88,6 +88,10 @@ class Settings(BaseSettings):
         path = ROOT_DIR / v
         if path.exists():
             return str(path.absolute())
+        if "challenges.yaml" in v:
+            if not path.exists():
+                path.touch()
+            return str(path.absolute())
 
         msg = f'Path "{v}" is not valid.'
         raise ValueError(msg)
