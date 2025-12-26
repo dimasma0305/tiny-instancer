@@ -202,7 +202,7 @@ def process_challenge(challenge_path: Path, category: str, name: str) -> Optiona
         'expose': expose
     }
 def _sanitize_name(name: str) -> str:
-    return re.sub(r'[^a-z0-9-]', '-', name)
+    return re.sub(r'[a-z0-9-]+', '-', name)
 
 def build_all_challenges() -> None:
     """
